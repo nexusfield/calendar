@@ -1,0 +1,4 @@
+anthropic
+resend
+google-auth
+google-api-python-client

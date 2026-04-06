@@ -1,0 +1,10 @@
+# Obsidian internals — don't commit these
+.obsidian/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env
+.env
+*.env

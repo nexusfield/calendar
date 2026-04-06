@@ -1,0 +1,2 @@
+
+when alfi takes in a pdf on a fund, what is the thing responsible for identifying the fund and the details about the fund? If unknown or never seen before does it automatically create tags and stuff for it? Or is that only done in the intake tool?

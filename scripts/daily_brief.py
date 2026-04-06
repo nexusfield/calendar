@@ -154,7 +154,7 @@ def send_email(body: str):
     today = datetime.datetime.now(TIMEZONE).strftime("%A %-d %b")
 
     resend.Emails.send({
-        "from": "brief@resend.dev",  # update to your verified domain once set up
+        "from": "onboarding@resend.dev",
         "to": recipient,
         "subject": f"Morning Brief — {today}",
         "text": body,

@@ -19,8 +19,8 @@ from googleapiclient.discovery import build
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-VAULT_ROOT      = pathlib.Path(__file__).parent.parent / "ailvault"
-BRAINDUMP_ROOT  = pathlib.Path(__file__).parent.parent / "briandump"
+VAULT_ROOT      = pathlib.Path.home() / "Documents" / "AILvault" / "AIL"
+BRAINDUMP_ROOT  = pathlib.Path.home() / "Documents" / "Braindump"
 TIMEZONE        = datetime.timezone(datetime.timedelta(hours=-6))  # CST
 
 BATON_ROUGE_LAT = 30.4515
@@ -140,7 +140,7 @@ def read_braindump_daily_note() -> str:
     note_path = BRAINDUMP_ROOT / "daily" / f"{today}.md"
     if note_path.exists():
         return note_path.read_text(encoding="utf-8")
-    return f"No school note found for {today}."
+    return f"No personal note found for {today}."
 
 
 # ── 4. Google Calendar ────────────────────────────────────────────────────────
@@ -222,10 +222,10 @@ Here is his calendar for today:
 {calendar_events}
 </calendar>
 
-Here is his school daily note (Braindump vault):
-<school_note>
+Here is his personal daily note — projects, research, whatever he has going on (Braindump vault):
+<personal_note>
 {braindump_daily_note}
-</school_note>
+</personal_note>
 
 Here is his work daily note (AIL vault):
 <work_note>
@@ -239,9 +239,9 @@ Here is the weather for Baton Rouge today:
 
 Instructions:
 - Read the journal carefully. Pick the ONE passage from the list that speaks most directly to what he is carrying, struggling with, or needs to hear. Do not explain your choice.
-- Write the full KJV passage text from memory — do not summarize or shorten it.
-- Write the devotional to speak directly to what he shared in the journal.
-- For SCHOOL and WORK: extract only unchecked to-do items (lines with "- [ ]"). Keep each item short. If none, write "None."
+- Write the passage in modern, plain English — clear and readable, not KJV archaic language. Keep it accurate to the meaning but written like a man would actually read it today.
+- Write the devotional to speak directly to what he shared in the journal. Geared toward a man starting his day, centering himself around God and Christ. Direct, grounded, no filler.
+- For TASKS and WORK: extract only unchecked to-do items (lines with "- [ ]"). Keep each item short. If none, write "None."
 
 Write the brief in plain text — no markdown, no asterisks. Use this exact format:
 
@@ -255,17 +255,17 @@ WEATHER — Baton Rouge
 MEETINGS
 [List calendar events with times. If none, write "None."]
 
-SCHOOL
-[Unchecked to-do items from school note, short list. If none, write "None."]
+TASKS
+[Unchecked to-do items from personal note, short list. If none, write "None."]
 
 WORK
 [Unchecked to-do items from work note, short list. If none, write "None."]
 
-SCRIPTURE — [chosen reference] (KJV)
-[Full passage text written from memory. Do not shorten.]
+SCRIPTURE — [chosen reference]
+[Passage in modern, plain English. Do not shorten.]
 
 DEVOTIONAL
-[3-4 sentences. Speak directly to what he wrote last night. Personal, grounding, not preachy. No clichés. Write it like you mean it.]"""
+[3-4 sentences. Speak directly to what he wrote last night. For a man starting his day centered on God and Christ. Personal, grounding, not preachy. No clichés. Write it like you mean it.]"""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",

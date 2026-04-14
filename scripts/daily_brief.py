@@ -135,15 +135,12 @@ def read_today_daily_note() -> str:
     return f"No daily note found for {today}."
 
 
-def read_project_highlights() -> str:
-    projects_dir = VAULT_ROOT / "projects"
-    highlights   = []
-    for md_file in sorted(projects_dir.glob("*.md")):
-        content = md_file.read_text(encoding="utf-8")
-        for line in content.splitlines():
-            if any(kw in line for kw in ["At Risk", "⚠", "Cota Connect", "soft launch", "blocked", "Blocked"]):
-                highlights.append(f"[{md_file.stem}] {line.strip()}")
-    return "\n".join(highlights) if highlights else "No flagged items in projects."
+def read_braindump_daily_note() -> str:
+    today     = datetime.datetime.now(TIMEZONE).strftime("%Y-%m-%d")
+    note_path = BRAINDUMP_ROOT / "daily" / f"{today}.md"
+    if note_path.exists():
+        return note_path.read_text(encoding="utf-8")
+    return f"No school note found for {today}."
 
 
 # ── 4. Google Calendar ────────────────────────────────────────────────────────
@@ -195,11 +192,11 @@ def get_calendar_events() -> str:
 # ── 5. Compose with Claude ────────────────────────────────────────────────────
 
 def compose_brief(
-    journal:            str,
-    weather:            str,
-    daily_note:         str,
-    project_highlights: str,
-    calendar_events:    str,
+    journal:              str,
+    weather:              str,
+    braindump_daily_note: str,
+    ail_daily_note:       str,
+    calendar_events:      str,
 ) -> str:
     today  = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
@@ -225,15 +222,15 @@ Here is his calendar for today:
 {calendar_events}
 </calendar>
 
-Here is his Obsidian daily note:
-<daily_note>
-{daily_note}
-</daily_note>
+Here is his school daily note (Braindump vault):
+<school_note>
+{braindump_daily_note}
+</school_note>
 
-Here are flagged items from his project vault:
-<project_highlights>
-{project_highlights}
-</project_highlights>
+Here is his work daily note (AIL vault):
+<work_note>
+{ail_daily_note}
+</work_note>
 
 Here is the weather for Baton Rouge today:
 <weather>
@@ -244,35 +241,31 @@ Instructions:
 - Read the journal carefully. Pick the ONE passage from the list that speaks most directly to what he is carrying, struggling with, or needs to hear. Do not explain your choice.
 - Write the full KJV passage text from memory — do not summarize or shorten it.
 - Write the devotional to speak directly to what he shared in the journal.
+- For SCHOOL and WORK: extract only unchecked to-do items (lines with "- [ ]"). Keep each item short. If none, write "None."
 
 Write the brief in plain text — no markdown, no asterisks. Use this exact format:
 
 Good morning, Landon.
 
-SCRIPTURE — [chosen reference] (KJV)
-[Full passage text, written from memory. Do not shorten.]
-
-DEVOTIONAL
-[3-4 sentences. Speak directly to what he wrote last night. Personal, grounding, not preachy. No clichés. Write it like you mean it.]
+{today}
 
 WEATHER — Baton Rouge
 [Copy the weather block exactly as given.]
 
-TODAY — {today}
-
 MEETINGS
-[List events with times. If none, write "None."]
+[List calendar events with times. If none, write "None."]
 
-TASKS
-[Open tasks from the daily note. If none, write "None."]
+SCHOOL
+[Unchecked to-do items from school note, short list. If none, write "None."]
 
-BLOCKERS
-[Any blockers. If none, write "None."]
+WORK
+[Unchecked to-do items from work note, short list. If none, write "None."]
 
-VAULT HIGHLIGHTS
-[1-3 most important flagged items worth keeping in mind. If none, write "None."]
+SCRIPTURE — [chosen reference] (KJV)
+[Full passage text written from memory. Do not shorten.]
 
-Keep it tight. No filler. This is what he reads before starting work."""
+DEVOTIONAL
+[3-4 sentences. Speak directly to what he wrote last night. Personal, grounding, not preachy. No clichés. Write it like you mean it.]"""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
@@ -308,9 +301,11 @@ if __name__ == "__main__":
     print("Fetching weather...")
     weather = get_weather()
 
+    print("Reading Braindump daily note...")
+    braindump_daily_note = read_braindump_daily_note()
+
     print("Reading AIL vault...")
-    daily_note         = read_today_daily_note()
-    project_highlights = read_project_highlights()
+    ail_daily_note = read_today_daily_note()
 
     print("Reading Google Calendar...")
     calendar_events = get_calendar_events()
@@ -318,7 +313,7 @@ if __name__ == "__main__":
     print("Composing brief...")
     brief = compose_brief(
         journal, weather,
-        daily_note, project_highlights, calendar_events,
+        braindump_daily_note, ail_daily_note, calendar_events,
     )
 
     print("--- BRIEF PREVIEW ---")

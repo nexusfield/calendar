@@ -203,33 +203,33 @@ Instructions:
 
 Use this exact HTML structure and fill in each section:
 
-<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1a1a1a; line-height: 1.7; padding: 24px;">
+<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background-color: #fdf8f2; color: #2a2a2a; line-height: 1.7; padding: 32px;">
 
-  <p style="font-size: 20px; font-weight: bold; margin-bottom: 4px;">Good morning, Landon.</p>
-  <p style="color: #777; margin-top: 0;">{today}</p>
+  <p style="font-size: 22px; font-weight: bold; margin-bottom: 4px; color: #2d4a35;">Good morning, Landon.</p>
+  <p style="color: #7a7a6a; margin-top: 0;">{today}</p>
 
-  <p style="font-style: italic; color: #333; border-left: 3px solid #ccc; padding-left: 12px;">[ENCOURAGEMENT]</p>
+  <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">[ENCOURAGEMENT]</p>
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Word of the Day</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Word of the Day</h2>
   <p><strong>[WORD]</strong> - [definition]</p>
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Weather - Baton Rouge</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Weather - Baton Rouge</h2>
   <p style="white-space: pre-line;">[WEATHER BLOCK - copy exactly as given]</p>
-  <p style="color: #555; font-style: italic;">[WEATHER SUMMARY - one casual sentence]</p>
+  <p style="color: #6a7a5a; font-style: italic;">[WEATHER SUMMARY - one casual sentence]</p>
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Meetings</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Meetings</h2>
   [<ul style="padding-left: 20px;"><li> per event</ul> OR <p>None.</p>]
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Tasks</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Tasks</h2>
   [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Work</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Work</h2>
   [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Scripture - [REFERENCE]</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Scripture - [REFERENCE]</h2>
   <p>[PASSAGE in modern plain English. Do not shorten.]</p>
 
-  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Devotional</h2>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Devotional</h2>
   <p>[DEVOTIONAL]</p>
 
 </div>"""

@@ -192,7 +192,6 @@ def get_calendar_events() -> str:
 # ── 5. Compose with Claude ────────────────────────────────────────────────────
 
 def compose_brief(
-    journal:              str,
     weather:              str,
     braindump_daily_note: str,
     ail_daily_note:       str,
@@ -206,11 +205,6 @@ def compose_brief(
     prompt = f"""You are composing Landon's morning email brief. He is a young man — ambitious, faith-oriented, building toward something. Keep everything grounded and direct.
 
 Today is {today}.
-
-Here is his personal journal entry from last night:
-<journal>
-{journal}
-</journal>
 
 Here are the available scripture passages to choose from:
 <verse_options>
@@ -238,9 +232,9 @@ Here is the weather for Baton Rouge today:
 </weather>
 
 Instructions:
-- Read the journal carefully. Pick the ONE passage from the list that speaks most directly to what he is carrying, struggling with, or needs to hear. Do not explain your choice.
+- Pick the ONE passage from the list that is most fitting for a man starting his week or day with purpose. Do not explain your choice.
 - Write the passage in modern, plain English — clear and readable, not KJV archaic language. Keep it accurate to the meaning but written like a man would actually read it today.
-- Write the devotional to speak directly to what he shared in the journal. Geared toward a man starting his day, centering himself around God and Christ. Direct, grounded, no filler.
+- Write the devotional to be direct, grounded, and rooted in Christ. Written for a man who wants to start his day strong and anchored. No fluff, no clichés, no filler. Write it like you mean it.
 - For TASKS and WORK: extract only unchecked to-do items (lines with "- [ ]"). Keep each item short. If none, write "None."
 
 Write the brief in plain text — no markdown, no asterisks. Use this exact format:
@@ -265,7 +259,7 @@ SCRIPTURE — [chosen reference]
 [Passage in modern, plain English. Do not shorten.]
 
 DEVOTIONAL
-[3-4 sentences. Speak directly to what he wrote last night. For a man starting his day centered on God and Christ. Personal, grounding, not preachy. No clichés. Write it like you mean it.]"""
+[3-4 sentences. For a man starting his day anchored in God and Christ. Direct and grounded. No clichés. Write it like you mean it.]"""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
@@ -295,9 +289,6 @@ def send_email(body: str):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("Reading journal...")
-    journal = read_journal()
-
     print("Fetching weather...")
     weather = get_weather()
 
@@ -312,7 +303,7 @@ if __name__ == "__main__":
 
     print("Composing brief...")
     brief = compose_brief(
-        journal, weather,
+        weather,
         braindump_daily_note, ail_daily_note, calendar_events,
     )
 

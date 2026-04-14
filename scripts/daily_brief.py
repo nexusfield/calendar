@@ -191,68 +191,100 @@ Here is the weather for Baton Rouge today:
 </weather>
 
 Instructions:
-- Encouragement: Write 1-2 punchy sentences to open the day. Direct, personal, grounded in who he is. Not a pep talk. No cliches.
-- Quote of the Day: Pick a real quote from a real person — historical, philosophical, literary, whatever. Thought-provoking and timeless. Not motivational fluff. Attribute it with the person's name.
-- Scripture: Pick the ONE passage most fitting for a man starting his day with purpose. Write it in modern plain English, accurate to the meaning, readable. Do not shorten it.
-- Devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches. Write it like you mean it.
-- Weather summary: Based on the weather data, write one casual sentence about what kind of day it'll be. Practical, not poetic. Examples: "May want a raincoat." or "Good day to be outside." or "Hot and muggy — stay hydrated."
-- Tasks: Extract only unchecked items (lines starting with "- [ ]") from the personal note. Strip Obsidian wiki links like [[...]]. Keep each item short.
-- Work: Extract only unchecked items (lines starting with "- [ ]") from the work note. Strip Obsidian wiki links like [[...]]. Group related items into short topic buckets (e.g. "HubSpot CRM", "Doc Parser", "Sophie follow-ups") with a count or brief summary. Do not list every individual sub-task. Aim for 4-6 topic lines max.
-- Use NO em dashes (the long dash character) anywhere in the output.
-- Output valid HTML only. No markdown. No plain text outside of HTML tags.
+- encouragement: 1-2 punchy sentences to open the day. Direct, grounded in who he is. Not a pep talk. No cliches.
+- quote: A real quote from a real person. Historical, philosophical, literary. Thought-provoking and timeless. Not motivational fluff.
+- attribution: The person's name only.
+- weather_summary: One casual practical sentence about the day. Example: "May want a raincoat." or "Good day to be outside."
+- meetings: List of calendar events as short strings. Empty list if none.
+- tasks: Unchecked items (lines with "- [ ]") from personal note. Strip Obsidian wiki links. Empty list if none.
+- work: Unchecked items (lines with "- [ ]") from work note. Strip Obsidian wiki links. Group into topic buckets, 4-6 items max.
+- scripture_ref: The chosen passage reference only (e.g. "Romans 8:28-39").
+- scripture: Full passage in modern plain English. Do not shorten.
+- devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches.
 
-Use this exact HTML structure and fill in each section:
+Respond with a single valid JSON object and nothing else. No markdown, no code fences, just the raw JSON.
 
-<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background-color: #fdf8f2; color: #2a2a2a; line-height: 1.7; padding: 32px;">
-
-  <p style="font-size: 22px; font-weight: bold; margin-bottom: 4px; color: #2d4a35;">Good morning, Landon.</p>
-  <p style="color: #7a7a6a; margin-top: 0;">{today}</p>
-
-  <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">[ENCOURAGEMENT]</p>
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Quote of the Day</h2>
-  <p style="font-style: italic;">"[QUOTE]"</p>
-  <p style="color: #7a7a6a; margin-top: -8px;">- [PERSON]</p>
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Weather - Baton Rouge</h2>
-  <p style="white-space: pre-line;">[WEATHER BLOCK - copy exactly as given]</p>
-  <p style="color: #6a7a5a; font-style: italic;">[WEATHER SUMMARY - one casual sentence]</p>
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Meetings</h2>
-  [<ul style="padding-left: 20px;"><li> per event</ul> OR <p>None.</p>]
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Tasks</h2>
-  [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Work</h2>
-  [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Scripture - [REFERENCE]</h2>
-  <p>[PASSAGE in modern plain English. Do not shorten.]</p>
-
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Devotional</h2>
-  <p>[DEVOTIONAL]</p>
-
-</div>"""
+{{
+  "encouragement": "...",
+  "quote": "...",
+  "attribution": "...",
+  "weather_summary": "...",
+  "meetings": ["..."],
+  "tasks": ["..."],
+  "work": ["..."],
+  "scripture_ref": "...",
+  "scripture": "...",
+  "devotional": "..."
+}}"""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=2000,
-        system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. The brief includes his daily tasks, weather, calendar, and a scripture passage with devotional. The personal notes you receive are private journal-style reflections and should be treated pastorally and with discretion.",
+        system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. Output only valid JSON as instructed.",
         messages=[{"role": "user", "content": prompt}],
     )
 
-    body = message.content[0].text.strip()
+    raw = message.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
 
-    # Strip markdown code fences if Claude wrapped the HTML
-    if body.startswith("```"):
-        body = body.split("\n", 1)[1]
-        body = body.rsplit("```", 1)[0].strip()
+    data = json.loads(raw)
+    return render_html(data, today, weather)
 
-    # Guarantee no em dashes regardless of Claude's output
-    body = body.replace("\u2014", "-")
 
-    return body
+def render_html(data: dict, today: str, weather: str) -> str:
+    h2 = (
+        'style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; '
+        'font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; '
+        'color: #2d4a35; margin-top: 32px;"'
+    )
+
+    def list_html(items):
+        if not items:
+            return "<p>None.</p>"
+        lis = "".join(f"<li>{item.replace(chr(8212), '-')}</li>" for item in items)
+        return f'<ul style="padding-left: 20px;">{lis}</ul>'
+
+    meetings_html = list_html(data.get("meetings", []))
+    tasks_html    = list_html(data.get("tasks", []))
+    work_html     = list_html(data.get("work", []))
+
+    def clean(text):
+        return str(text).replace("\u2014", "-")
+
+    weather_html = weather.replace("\n", "<br>")
+
+    return f"""<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; background-color: #fdf8f2; color: #2a2a2a; line-height: 1.7; padding: 32px;">
+
+  <p style="font-size: 22px; font-weight: bold; margin-bottom: 4px; color: #2d4a35;">Good morning, Landon.</p>
+  <p style="color: #7a7a6a; margin-top: 0;">{today}</p>
+
+  <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">{clean(data.get("encouragement", ""))}</p>
+
+  <h2 {h2}>Quote of the Day</h2>
+  <p style="font-style: italic;">"{clean(data.get("quote", ""))}"</p>
+  <p style="color: #7a7a6a; margin-top: -8px;">- {clean(data.get("attribution", ""))}</p>
+
+  <h2 {h2}>Weather - Baton Rouge</h2>
+  <p style="white-space: pre-line;">{weather_html}</p>
+  <p style="color: #6a7a5a; font-style: italic;">{clean(data.get("weather_summary", ""))}</p>
+
+  <h2 {h2}>Meetings</h2>
+  {meetings_html}
+
+  <h2 {h2}>Tasks</h2>
+  {tasks_html}
+
+  <h2 {h2}>Work</h2>
+  {work_html}
+
+  <h2 {h2}>Scripture - {clean(data.get("scripture_ref", ""))}</h2>
+  <p>{clean(data.get("scripture", ""))}</p>
+
+  <h2 {h2}>Devotional</h2>
+  <p>{clean(data.get("devotional", ""))}</p>
+
+</div>"""
 
 
 # ── 5. Send via Resend ────────────────────────────────────────────────────────

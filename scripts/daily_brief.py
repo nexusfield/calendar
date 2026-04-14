@@ -200,7 +200,6 @@ Instructions:
 - work: Unchecked items (lines with "- [ ]") from work note. Strip Obsidian wiki links. Group into topic buckets, 4-6 items max.
 - scripture_ref: The chosen passage reference only (e.g. "Romans 8:28-39").
 - scripture: Write the single most striking verse or two from this passage in modern plain English. Just the words of the text, no commentary.
-- devotional: 3-4 sentences unpacking what the passage means for today. Grounded in Christ. Personal and direct. No cliches.
 
 Respond with a single valid JSON object and nothing else. No markdown, no code fences, just the raw JSON.
 
@@ -212,8 +211,7 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
   "tasks": ["..."],
   "work": ["..."],
   "scripture_ref": "...",
-  "scripture": "...",
-  "devotional": "..."
+  "scripture": "..."
 }}"""
 
     for attempt in range(3):
@@ -221,7 +219,7 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
             message = client.messages.create(
                 model="claude-sonnet-4-6",
                 max_tokens=2000,
-                system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. Output only valid JSON as instructed.",
+                system="You are composing a morning brief. Output only valid JSON as instructed.",
                 messages=[{"role": "user", "content": prompt}],
             )
             break
@@ -235,10 +233,25 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
         raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
 
     data = json.loads(raw)
-    return render_html(data, today, weather)
+    devotional = compose_devotional(data.get("scripture_ref", ""), data.get("scripture", ""))
+    return render_html(data, today, weather, devotional)
 
 
-def render_html(data: dict, today: str, weather: str) -> str:
+def compose_devotional(scripture_ref: str, scripture: str) -> str:
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=300,
+        system="You write short devotional reflections.",
+        messages=[{"role": "user", "content": f"""Scripture: {scripture_ref}
+{scripture}
+
+Write a 3-4 sentence devotional for a man starting his day. Grounded in faith, direct, personal. No cliches. Do not reference work, tasks, schedules, or assignments."""}],
+    )
+    return message.content[0].text.strip().replace("\u2014", "-")
+
+
+def render_html(data: dict, today: str, weather: str, devotional: str) -> str:
     h2 = (
         'style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; '
         'font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; '
@@ -285,7 +298,7 @@ def render_html(data: dict, today: str, weather: str) -> str:
   <p>{clean(data.get("scripture", ""))}</p>
 
   <h2 {h2}>Devotional</h2>
-  <p>{clean(data.get("devotional", ""))}</p>
+  <p>{clean(devotional)}</p>
 
 </div>"""
 

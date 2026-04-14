@@ -216,12 +216,19 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
   "devotional": "..."
 }}"""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=2000,
-        system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. Output only valid JSON as instructed.",
-        messages=[{"role": "user", "content": prompt}],
-    )
+    for attempt in range(3):
+        try:
+            message = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=2000,
+                system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. Output only valid JSON as instructed.",
+                messages=[{"role": "user", "content": prompt}],
+            )
+            break
+        except Exception as e:
+            if attempt == 2:
+                raise
+            print(f"Attempt {attempt + 1} failed ({e}), retrying...")
 
     raw = message.content[0].text.strip()
     if raw.startswith("```"):

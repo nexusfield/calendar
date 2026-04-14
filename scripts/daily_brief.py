@@ -196,7 +196,7 @@ Instructions:
 - Scripture: Pick the ONE passage most fitting for a man starting his day with purpose. Write it in modern plain English, accurate to the meaning, readable. Do not shorten it.
 - Devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches. Write it like you mean it.
 - Tasks: Extract only unchecked items (lines starting with "- [ ]") from the personal note. Strip Obsidian wiki links like [[...]]. Keep each item short.
-- Work: Extract only unchecked items (lines starting with "- [ ]") from the work note. Strip Obsidian wiki links like [[...]]. Keep each item short.
+- Work: Extract only unchecked items (lines starting with "- [ ]") from the work note. Strip Obsidian wiki links like [[...]]. Group related items into short topic buckets (e.g. "HubSpot CRM", "Doc Parser", "Sophie follow-ups") with a count or brief summary. Do not list every individual sub-task. Aim for 4-6 topic lines max.
 - Use NO em dashes (the long dash character) anywhere in the output.
 - Output valid HTML only. No markdown. No plain text outside of HTML tags.
 
@@ -239,7 +239,17 @@ Use this exact HTML structure and fill in each section:
         messages=[{"role": "user", "content": prompt}],
     )
 
-    return message.content[0].text
+    body = message.content[0].text.strip()
+
+    # Strip markdown code fences if Claude wrapped the HTML
+    if body.startswith("```"):
+        body = body.split("\n", 1)[1]
+        body = body.rsplit("```", 1)[0].strip()
+
+    # Guarantee no em dashes regardless of Claude's output
+    body = body.replace("\u2014", "-")
+
+    return body
 
 
 # ── 5. Send via Resend ────────────────────────────────────────────────────────

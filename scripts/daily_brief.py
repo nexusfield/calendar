@@ -192,7 +192,7 @@ Here is the weather for Baton Rouge today:
 
 Instructions:
 - Encouragement: Write 1-2 punchy sentences to open the day. Direct, personal, grounded in who he is. Not a pep talk. No cliches.
-- Word of the Day: Pick a strong, uncommon English word. Give a short one-line definition.
+- Quote of the Day: Pick a real quote from a real person — historical, philosophical, literary, whatever. Thought-provoking and timeless. Not motivational fluff. Attribute it with the person's name.
 - Scripture: Pick the ONE passage most fitting for a man starting his day with purpose. Write it in modern plain English, accurate to the meaning, readable. Do not shorten it.
 - Devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches. Write it like you mean it.
 - Weather summary: Based on the weather data, write one casual sentence about what kind of day it'll be. Practical, not poetic. Examples: "May want a raincoat." or "Good day to be outside." or "Hot and muggy — stay hydrated."
@@ -210,8 +210,9 @@ Use this exact HTML structure and fill in each section:
 
   <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">[ENCOURAGEMENT]</p>
 
-  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Word of the Day</h2>
-  <p><strong>[WORD]</strong> - [definition]</p>
+  <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Quote of the Day</h2>
+  <p style="font-style: italic;">"[QUOTE]"</p>
+  <p style="color: #7a7a6a; margin-top: -8px;">- [PERSON]</p>
 
   <h2 style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #2d4a35; margin-top: 32px;">Weather - Baton Rouge</h2>
   <p style="white-space: pre-line;">[WEATHER BLOCK - copy exactly as given]</p>

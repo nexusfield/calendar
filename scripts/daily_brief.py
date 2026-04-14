@@ -19,8 +19,8 @@ from googleapiclient.discovery import build
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-VAULT_ROOT      = pathlib.Path.home() / "Documents" / "AILvault" / "AIL"
-BRAINDUMP_ROOT  = pathlib.Path.home() / "Documents" / "Braindump"
+VAULT_ROOT      = pathlib.Path(__file__).parent.parent / "ailvault" / "AIL"
+BRAINDUMP_ROOT  = pathlib.Path(__file__).parent.parent / "briandump"
 TIMEZONE        = datetime.timezone(datetime.timedelta(hours=-6))  # CST
 
 BATON_ROUGE_LAT = 30.4515

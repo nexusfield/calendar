@@ -12,6 +12,7 @@ import pathlib
 import requests
 import anthropic
 import resend
+from zoneinfo import ZoneInfo
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
@@ -20,7 +21,7 @@ from googleapiclient.discovery import build
 
 VAULT_ROOT      = pathlib.Path(__file__).parent.parent / "ailvault" / "AIL"
 BRAINDUMP_ROOT  = pathlib.Path(__file__).parent.parent / "briandump"
-TIMEZONE        = datetime.timezone(datetime.timedelta(hours=-6))  # CST
+TIMEZONE        = ZoneInfo("America/Chicago")  # CST/CDT, handles daylight saving
 
 BATON_ROUGE_LAT = 30.4515
 BATON_ROUGE_LON = -91.1871

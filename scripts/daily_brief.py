@@ -162,7 +162,7 @@ def compose_brief(
     client     = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     verse_list = "\n".join(f"- {v}" for v in VERSES)
 
-    prompt = f"""You are composing Landon's morning email brief. He is a young man, ambitious, faith-oriented, building toward something. Keep everything grounded and direct.
+    prompt = f"""You are composing Landon's morning email brief. He is a young man, ambitious and faith-oriented. Keep everything grounded and direct.
 
 Today is {today}.
 

@@ -191,7 +191,6 @@ Here is the weather for Baton Rouge today:
 </weather>
 
 Instructions:
-- encouragement: 1-2 punchy sentences to open the day. Direct, grounded in who he is. Not a pep talk. No cliches.
 - quote: A real quote from a real person. Historical, philosophical, literary. Thought-provoking and timeless. Not motivational fluff.
 - attribution: The person's name only.
 - weather_summary: One casual practical sentence about the day. Example: "May want a raincoat." or "Good day to be outside."
@@ -205,7 +204,6 @@ Instructions:
 Respond with a single valid JSON object and nothing else. No markdown, no code fences, just the raw JSON.
 
 {{
-  "encouragement": "...",
   "quote": "...",
   "attribution": "...",
   "weather_summary": "...",
@@ -259,11 +257,8 @@ def render_html(data: dict, today: str, weather: str) -> str:
   <p style="font-size: 22px; font-weight: bold; margin-bottom: 4px; color: #2d4a35;">Good morning, Landon.</p>
   <p style="color: #7a7a6a; margin-top: 0;">{today}</p>
 
-  <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">{clean(data.get("encouragement", ""))}</p>
-
-  <h2 {h2}>Quote of the Day</h2>
-  <p style="font-style: italic;">"{clean(data.get("quote", ""))}"</p>
-  <p style="color: #7a7a6a; margin-top: -8px;">- {clean(data.get("attribution", ""))}</p>
+  <p style="font-style: italic; color: #3a3a2a; border-left: 3px solid #8aab6e; padding-left: 14px;">"{clean(data.get("quote", ""))}"</p>
+  <p style="color: #7a7a6a; margin-top: -10px; padding-left: 17px;">- {clean(data.get("attribution", ""))}</p>
 
   <h2 {h2}>Weather - Baton Rouge</h2>
   <p style="white-space: pre-line;">{weather_html}</p>

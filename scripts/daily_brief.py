@@ -9,6 +9,7 @@ import os
 import json
 import datetime
 import pathlib
+import hashlib
 import requests
 import anthropic
 import resend
@@ -26,6 +27,47 @@ TIMEZONE        = ZoneInfo("America/Chicago")  # CST/CDT, handles daylight savin
 
 BATON_ROUGE_LAT = 30.4515
 BATON_ROUGE_LON = -91.1871
+
+
+def _day_without_leading_zero(now: datetime.datetime, fmt_prefix: str) -> str:
+    return f"{now.strftime(fmt_prefix)} {now.day}"
+
+
+def _log_prompt_boundary(label: str, system_prompt: str, user_prompt: str):
+    log_path = os.environ.get("PROMPT_DEBUG_LOG_PATH", "").strip()
+    if not log_path:
+        return
+
+    payload_hash = hashlib.sha256(
+        json.dumps(
+            {"system": system_prompt, "user": user_prompt},
+            ensure_ascii=False,
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()
+
+    redacted_preview = user_prompt[:400].replace("\n", "\\n")
+    marker_hits = {
+        "contains_tasks_marker": ("- [ ]" in user_prompt),
+        "contains_calendar_tag": ("<calendar>" in user_prompt),
+        "contains_personal_note_tag": ("<personal_note>" in user_prompt),
+        "contains_work_note_tag": ("<work_note>" in user_prompt),
+    }
+
+    with open(log_path, "a", encoding="utf-8") as fh:
+        fh.write(
+            json.dumps(
+                {
+                    "source": "daily_brief",
+                    "label": label,
+                    "hash": payload_hash,
+                    "preview": redacted_preview,
+                    "marker_hits": marker_hits,
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
 
 
 # ── 1. Weather — Baton Rouge ──────────────────────────────────────────────────
@@ -131,8 +173,10 @@ def compose_brief(
     ail_daily_note:       str,
     calendar_events:      str,
 ) -> str:
-    today  = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
+    now = datetime.datetime.now(TIMEZONE)
+    today = _day_without_leading_zero(now, "%A, %B")
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    system_prompt = "You are composing a morning brief. Output only valid JSON as instructed."
 
     prompt = f"""You are composing Landon's morning email brief. He is a young man, ambitious and faith-oriented. Keep everything grounded and direct.
 
@@ -176,13 +220,18 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
   "tasks": ["..."],
   "work": ["..."]
 }}"""
+    _log_prompt_boundary(
+        label="compose_brief",
+        system_prompt=system_prompt,
+        user_prompt=prompt,
+    )
 
     for attempt in range(3):
         try:
             message = client.messages.create(
                 model="claude-sonnet-4-6",
                 max_tokens=2000,
-                system="You are composing a morning brief. Output only valid JSON as instructed.",
+                system=system_prompt,
                 messages=[{"role": "user", "content": prompt}],
             )
             break
@@ -258,7 +307,8 @@ def render_html(data: dict, today: str, weather: str, scripture_ref: str, script
 def send_email(body: str):
     resend.api_key = os.environ["RESEND_API_KEY"]
     recipient      = os.environ["RECIPIENT_EMAIL"]
-    today          = datetime.datetime.now(TIMEZONE).strftime("%A %-d %b")
+    now            = datetime.datetime.now(TIMEZONE)
+    today          = _day_without_leading_zero(now, "%A") + f" {now.strftime('%b')}"
 
     resend.Emails.send({
         "from":    "onboarding@resend.dev",

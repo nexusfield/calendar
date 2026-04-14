@@ -1,0 +1,87 @@
+{
+  "artifacts_dir": "C:\\Users\\booot\\Documents\\calendar\\investigation\\context-bleed",
+  "full_run_devotionals": [
+    "Walk in repentance and courage today; follow Christ in truth and humility.",
+    "Walk in repentance and courage today; follow Christ in truth and humility.",
+    "Walk in repentance and courage today; follow Christ in truth and humility."
+  ],
+  "standalone_devotionals": [
+    "Walk in repentance and courage today; follow Christ in truth and humility.",
+    "Walk in repentance and courage today; follow Christ in truth and humility.",
+    "Walk in repentance and courage today; follow Christ in truth and humility."
+  ],
+  "full_run_html_hashes": [
+    "0d11c3b8f24eb0a02fa522b5f87589c2c355848a5fac2b8eec83e7377a6548a6",
+    "0d11c3b8f24eb0a02fa522b5f87589c2c355848a5fac2b8eec83e7377a6548a6",
+    "0d11c3b8f24eb0a02fa522b5f87589c2c355848a5fac2b8eec83e7377a6548a6"
+  ],
+  "prompt_hashes": {
+    "compose_brief": [
+      "706f01e1a0c540d342203e78fec397c3a90d761ba0b335da36ceed1762c22ea6"
+    ],
+    "compose_brief_marker_hits": [
+      {
+        "contains_tasks_marker": true,
+        "contains_calendar_tag": true,
+        "contains_personal_note_tag": true,
+        "contains_work_note_tag": true
+      },
+      {
+        "contains_tasks_marker": true,
+        "contains_calendar_tag": true,
+        "contains_personal_note_tag": true,
+        "contains_work_note_tag": true
+      },
+      {
+        "contains_tasks_marker": true,
+        "contains_calendar_tag": true,
+        "contains_personal_note_tag": true,
+        "contains_work_note_tag": true
+      }
+    ],
+    "compose_scripture_and_devotional": [
+      "854712bb5c89cae55646491fd2304d8471eefce6ac86ee9a526a2a9e9600479b"
+    ],
+    "compose_scripture_and_devotional_marker_hits": [
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      },
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      },
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      },
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      },
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      },
+      {
+        "contains_tasks_word": false,
+        "contains_work_word": false,
+        "contains_calendar_word": false,
+        "contains_bracket_tasks_marker": false
+      }
+    ]
+  },
+  "contains_leak_token_in_devotional_full_run": false,
+  "contains_leak_token_in_devotional_standalone": false,
+  "full_vs_standalone_match": true
+}

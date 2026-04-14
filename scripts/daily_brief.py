@@ -1,9 +1,8 @@
 """
 daily_brief.py — Composes and sends Landon's morning email brief.
-Reads:   AIL vault (daily note + projects), Braindump vault (personal journal)
-Fetches: Baton Rouge weather (OpenWeatherMap)
-Sends:   Email via Resend, text composed by Claude
-         Claude reads the journal and picks the most fitting scripture passage.
+Reads:   AIL vault (daily note), Braindump vault (personal daily note)
+Fetches: Baton Rouge weather (OpenWeatherMap), Google Calendar
+Sends:   HTML email via Resend, content composed by Claude
 """
 
 import os
@@ -26,8 +25,6 @@ TIMEZONE        = datetime.timezone(datetime.timedelta(hours=-6))  # CST
 BATON_ROUGE_LAT = 30.4515
 BATON_ROUGE_LON = -91.1871
 
-# Claude picks from this list based on the journal entry.
-# It knows these passages well enough to write them accurately from memory.
 VERSES = [
     "Romans 5:1-5",
     "Romans 8:1-11",
@@ -57,41 +54,12 @@ VERSES = [
 ]
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
-
-def uv_label(value: float) -> str:
-    if value < 3:  return "Low"
-    if value < 6:  return "Moderate"
-    if value < 8:  return "High"
-    if value < 11: return "Very High"
-    return "Extreme"
-
-
-# ── 1. Journal — Braindump vault ──────────────────────────────────────────────
-
-def read_journal() -> str:
-    """
-    Looks for a journal entry from last night (yesterday) or today.
-    Checks yesterday first since the entry is written the evening before.
-    """
-    now       = datetime.datetime.now(TIMEZONE)
-    yesterday = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-    today     = now.strftime("%Y-%m-%d")
-
-    for date_str in [yesterday, today]:
-        path = BRAINDUMP_ROOT / "journal" / f"{date_str}.md"
-        if path.exists():
-            return path.read_text(encoding="utf-8")
-
-    return "No journal entry found."
-
-
-# ── 2. Weather — Baton Rouge ──────────────────────────────────────────────────
+# ── 1. Weather — Baton Rouge ──────────────────────────────────────────────────
 
 def get_weather() -> str:
     api_key = os.environ.get("OPENWEATHER_API_KEY", "")
     if not api_key:
-        return "Weather not configured — add OPENWEATHER_API_KEY to repo secrets."
+        return "Weather not configured."
 
     base   = "https://api.openweathermap.org/data/2.5"
     coords = f"lat={BATON_ROUGE_LAT}&lon={BATON_ROUGE_LON}&appid={api_key}&units=imperial"
@@ -107,25 +75,17 @@ def get_weather() -> str:
         forecast = requests.get(f"{base}/forecast?{coords}&cnt=8", timeout=10).json()
         day_high = max(item["main"]["temp_max"] for item in forecast["list"])
 
-        uv_resp  = requests.get(
-            f"{base}/uvi?lat={BATON_ROUGE_LAT}&lon={BATON_ROUGE_LON}&appid={api_key}",
-            timeout=10,
-        ).json()
-        uv_value = uv_resp.get("value", None)
-        uv_str   = f"{uv_value} — {uv_label(uv_value)}" if uv_value is not None else "N/A"
-
         return (
-            f"  {conditions}\n"
-            f"  Now: {temp:.0f}°F  (feels like {feels_like:.0f}°F)\n"
-            f"  High: {day_high:.0f}°F  |  Humidity: {humidity}%  |  Wind: {wind_mph:.0f} mph\n"
-            f"  UV Index: {uv_str}"
+            f"{conditions}\n"
+            f"Now: {temp:.0f}F (feels like {feels_like:.0f}F)\n"
+            f"High: {day_high:.0f}F | Humidity: {humidity}% | Wind: {wind_mph:.0f} mph"
         )
 
     except Exception as e:
         return f"Weather unavailable ({e})."
 
 
-# ── 3. AIL vault ──────────────────────────────────────────────────────────────
+# ── 2. AIL vault ──────────────────────────────────────────────────────────────
 
 def read_today_daily_note() -> str:
     today     = datetime.datetime.now(TIMEZONE).strftime("%Y-%m-%d")
@@ -143,7 +103,7 @@ def read_braindump_daily_note() -> str:
     return f"No personal note found for {today}."
 
 
-# ── 4. Google Calendar ────────────────────────────────────────────────────────
+# ── 3. Google Calendar ────────────────────────────────────────────────────────
 
 def get_calendar_events() -> str:
     creds_json  = os.environ.get("GOOGLE_CREDENTIALS_JSON", "")
@@ -184,12 +144,12 @@ def get_calendar_events() -> str:
         else:
             time_str = "All day"
         title = event.get("summary", "(No title)")
-        lines.append(f"  {time_str} — {title}")
+        lines.append(f"{time_str}: {title}")
 
     return "\n".join(lines)
 
 
-# ── 5. Compose with Claude ────────────────────────────────────────────────────
+# ── 4. Compose with Claude ────────────────────────────────────────────────────
 
 def compose_brief(
     weather:              str,
@@ -197,12 +157,11 @@ def compose_brief(
     ail_daily_note:       str,
     calendar_events:      str,
 ) -> str:
-    today  = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
-    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-
+    today      = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
+    client     = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     verse_list = "\n".join(f"- {v}" for v in VERSES)
 
-    prompt = f"""You are composing Landon's morning email brief. He is a young man — ambitious, faith-oriented, building toward something. Keep everything grounded and direct.
+    prompt = f"""You are composing Landon's morning email brief. He is a young man, ambitious, faith-oriented, building toward something. Keep everything grounded and direct.
 
 Today is {today}.
 
@@ -216,7 +175,7 @@ Here is his calendar for today:
 {calendar_events}
 </calendar>
 
-Here is his personal daily note — projects, research, whatever he has going on (Braindump vault):
+Here is his personal daily note (projects, research, personal tasks):
 <personal_note>
 {braindump_daily_note}
 </personal_note>
@@ -232,34 +191,46 @@ Here is the weather for Baton Rouge today:
 </weather>
 
 Instructions:
-- Pick the ONE passage from the list that is most fitting for a man starting his week or day with purpose. Do not explain your choice.
-- Write the passage in modern, plain English — clear and readable, not KJV archaic language. Keep it accurate to the meaning but written like a man would actually read it today.
-- Write the devotional to be direct, grounded, and rooted in Christ. Written for a man who wants to start his day strong and anchored. No fluff, no clichés, no filler. Write it like you mean it.
-- For TASKS and WORK: extract only unchecked to-do items (lines with "- [ ]"). Keep each item short. If none, write "None."
+- Encouragement: Write 1-2 punchy sentences to open the day. Direct, personal, grounded in who he is. Not a pep talk. No cliches.
+- Word of the Day: Pick a strong, uncommon English word. Give a short one-line definition.
+- Scripture: Pick the ONE passage most fitting for a man starting his day with purpose. Write it in modern plain English, accurate to the meaning, readable. Do not shorten it.
+- Devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches. Write it like you mean it.
+- Tasks: Extract only unchecked items (lines starting with "- [ ]") from the personal note. Strip Obsidian wiki links like [[...]]. Keep each item short.
+- Work: Extract only unchecked items (lines starting with "- [ ]") from the work note. Strip Obsidian wiki links like [[...]]. Keep each item short.
+- Use NO em dashes (the long dash character) anywhere in the output.
+- Output valid HTML only. No markdown. No plain text outside of HTML tags.
 
-Write the brief in plain text — no markdown, no asterisks. Use this exact format:
+Use this exact HTML structure and fill in each section:
 
-Good morning, Landon.
+<div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; color: #1a1a1a; line-height: 1.7; padding: 24px;">
 
-{today}
+  <p style="font-size: 20px; font-weight: bold; margin-bottom: 4px;">Good morning, Landon.</p>
+  <p style="color: #777; margin-top: 0;">{today}</p>
 
-WEATHER — Baton Rouge
-[Copy the weather block exactly as given.]
+  <p style="font-style: italic; color: #333; border-left: 3px solid #ccc; padding-left: 12px;">[ENCOURAGEMENT]</p>
 
-MEETINGS
-[List calendar events with times. If none, write "None."]
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Word of the Day</h2>
+  <p><strong>[WORD]</strong> - [definition]</p>
 
-TASKS
-[Unchecked to-do items from personal note, short list. If none, write "None."]
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Weather - Baton Rouge</h2>
+  <p style="white-space: pre-line;">[WEATHER BLOCK - copy exactly as given]</p>
 
-WORK
-[Unchecked to-do items from work note, short list. If none, write "None."]
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Meetings</h2>
+  [<ul style="padding-left: 20px;"><li> per event</ul> OR <p>None.</p>]
 
-SCRIPTURE — [chosen reference]
-[Passage in modern, plain English. Do not shorten.]
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Tasks</h2>
+  [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
 
-DEVOTIONAL
-[3-4 sentences. For a man starting his day anchored in God and Christ. Direct and grounded. No clichés. Write it like you mean it.]"""
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Work</h2>
+  [<ul style="padding-left: 20px;"><li> per unchecked item</ul> OR <p>None.</p>]
+
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Scripture - [REFERENCE]</h2>
+  <p>[PASSAGE in modern plain English. Do not shorten.]</p>
+
+  <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Devotional</h2>
+  <p>[DEVOTIONAL]</p>
+
+</div>"""
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
@@ -271,7 +242,7 @@ DEVOTIONAL
     return message.content[0].text
 
 
-# ── 6. Send via Resend ────────────────────────────────────────────────────────
+# ── 5. Send via Resend ────────────────────────────────────────────────────────
 
 def send_email(body: str):
     resend.api_key = os.environ["RESEND_API_KEY"]
@@ -281,8 +252,9 @@ def send_email(body: str):
     resend.Emails.send({
         "from":    "onboarding@resend.dev",
         "to":      recipient,
-        "subject": f"Morning Brief — {today}",
-        "text":    body,
+        "subject": f"Morning Brief: {today}",
+        "html":    body,
+        "text":    "See HTML version.",
     })
     print(f"Brief sent to {recipient}")
 

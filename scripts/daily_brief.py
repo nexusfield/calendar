@@ -199,8 +199,8 @@ Instructions:
 - tasks: Unchecked items (lines with "- [ ]") from personal note. Strip Obsidian wiki links. Empty list if none.
 - work: Unchecked items (lines with "- [ ]") from work note. Strip Obsidian wiki links. Group into topic buckets, 4-6 items max.
 - scripture_ref: The chosen passage reference only (e.g. "Romans 8:28-39").
-- scripture: Full passage in modern plain English. Do not shorten.
-- devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches.
+- scripture: Write the single most striking verse or two from this passage in modern plain English. Just the words of the text, no commentary.
+- devotional: 3-4 sentences unpacking what the passage means for today. Grounded in Christ. Personal and direct. No cliches.
 
 Respond with a single valid JSON object and nothing else. No markdown, no code fences, just the raw JSON.
 

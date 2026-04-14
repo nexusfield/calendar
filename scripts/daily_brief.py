@@ -264,6 +264,7 @@ DEVOTIONAL
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=2000,
+        system="You are a personal assistant composing a private morning brief for Landon, a young Christian man. The brief includes his daily tasks, weather, calendar, and a scripture passage with devotional. The personal notes you receive are private journal-style reflections and should be treated pastorally and with discretion.",
         messages=[{"role": "user", "content": prompt}],
     )
 

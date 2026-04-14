@@ -2,17 +2,25 @@ name: Daily Morning Brief
 
 on:
   schedule:
-    # 7AM CST = 1PM UTC (UTC-6). In CDT (summer, UTC-5) this runs at 8AM — adjust to 0 12 * * * if needed.
+    # 7AM CST = 1PM UTC (UTC-6)
+    # In CDT (summer, UTC-5) this runs at 8AM — change to "0 12 * * *" from March–November if needed
     - cron: '0 13 * * *'
-  workflow_dispatch: # allows manual trigger from GitHub Actions UI for testing
+  workflow_dispatch:
 
 jobs:
   send-brief:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout vault
+      - name: Checkout calendar vault
         uses: actions/checkout@v4
+
+      - name: Checkout Braindump vault
+        uses: actions/checkout@v4
+        with:
+          repository: nexusfield/briandump
+          token: ${{ secrets.BRAINDUMP_PAT }}
+          path: briandump
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,9 +32,10 @@ jobs:
 
       - name: Run daily brief
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          ANTHROPIC_API_KEY:       ${{ secrets.ANTHROPIC_API_KEY }}
+          RESEND_API_KEY:          ${{ secrets.RESEND_API_KEY }}
+          RECIPIENT_EMAIL:         ${{ secrets.RECIPIENT_EMAIL }}
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
-          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          GOOGLE_CALENDAR_ID:      ${{ secrets.GOOGLE_CALENDAR_ID }}
+          OPENWEATHER_API_KEY:     ${{ secrets.OPENWEATHER_API_KEY }}
         run: python scripts/daily_brief.py

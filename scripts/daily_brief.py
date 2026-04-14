@@ -26,34 +26,6 @@ TIMEZONE        = ZoneInfo("America/Chicago")  # CST/CDT, handles daylight savin
 BATON_ROUGE_LAT = 30.4515
 BATON_ROUGE_LON = -91.1871
 
-VERSES = [
-    "Romans 5:1-5",
-    "Romans 8:1-11",
-    "Romans 8:28-39",
-    "Romans 12:1-2",
-    "Romans 6:1-11",
-    "Romans 3:21-26",
-    "Romans 8:14-17",
-    "Romans 11:33-36",
-    "John 14:1-6",
-    "John 14:15-21",
-    "John 15:1-11",
-    "John 15:12-17",
-    "John 10:7-18",
-    "John 11:25-26",
-    "John 16:31-33",
-    "John 17:1-19",
-    "Matthew 5:1-12",
-    "Matthew 5:43-48",
-    "Matthew 6:25-34",
-    "Matthew 11:28-30",
-    "Matthew 16:24-26",
-    "Matthew 28:18-20",
-    "Revelation 2:1-7",
-    "Revelation 3:14-22",
-    "Revelation 21:1-7",
-]
-
 
 # ── 1. Weather — Baton Rouge ──────────────────────────────────────────────────
 
@@ -158,18 +130,12 @@ def compose_brief(
     ail_daily_note:       str,
     calendar_events:      str,
 ) -> str:
-    today      = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
-    client     = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-    verse_list = "\n".join(f"- {v}" for v in VERSES)
+    today  = datetime.datetime.now(TIMEZONE).strftime("%A, %B %-d")
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     prompt = f"""You are composing Landon's morning email brief. He is a young man, ambitious and faith-oriented. Keep everything grounded and direct.
 
 Today is {today}.
-
-Here are the available scripture passages to choose from:
-<verse_options>
-{verse_list}
-</verse_options>
 
 Here is his calendar for today:
 <calendar>
@@ -198,8 +164,6 @@ Instructions:
 - meetings: List of calendar events as short strings. Empty list if none.
 - tasks: Unchecked items (lines with "- [ ]") from personal note. Strip Obsidian wiki links. Empty list if none.
 - work: Unchecked items (lines with "- [ ]") from work note. Strip Obsidian wiki links. Group into topic buckets, 4-6 items max.
-- scripture_ref: The chosen passage reference only (e.g. "Romans 8:28-39").
-- scripture: Write the single most striking verse or two from this passage in modern plain English. Just the words of the text, no commentary.
 
 Respond with a single valid JSON object and nothing else. No markdown, no code fences, just the raw JSON.
 
@@ -209,9 +173,7 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
   "weather_summary": "...",
   "meetings": ["..."],
   "tasks": ["..."],
-  "work": ["..."],
-  "scripture_ref": "...",
-  "scripture": "..."
+  "work": ["..."]
 }}"""
 
     for attempt in range(3):
@@ -233,8 +195,27 @@ Respond with a single valid JSON object and nothing else. No markdown, no code f
         raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
 
     data = json.loads(raw)
-    devotional = compose_devotional(data.get("scripture_ref", ""), data.get("scripture", ""))
-    return render_html(data, today, weather, devotional)
+    scripture_ref, scripture = compose_scripture()
+    devotional = compose_devotional(scripture_ref, scripture)
+    return render_html(data, today, weather, scripture_ref, scripture, devotional)
+
+
+def compose_scripture() -> tuple:
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=400,
+        system="You select and write scripture passages.",
+        messages=[{"role": "user", "content": """Pick any passage from the Bible fitting for a man starting his day. Write the most striking verse or two from it in modern plain English. Just the words of the text, no commentary.
+
+Respond with JSON only:
+{"scripture_ref": "...", "scripture": "..."}"""}],
+    )
+    raw = message.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    result = json.loads(raw)
+    return result.get("scripture_ref", ""), result.get("scripture", "")
 
 
 def compose_devotional(scripture_ref: str, scripture: str) -> str:
@@ -251,7 +232,7 @@ Write a 3-4 sentence men's devotional based on this passage. The kind that puts 
     return message.content[0].text.strip().replace("\u2014", "-")
 
 
-def render_html(data: dict, today: str, weather: str, devotional: str) -> str:
+def render_html(data: dict, today: str, weather: str, scripture_ref: str, scripture: str, devotional: str) -> str:
     h2 = (
         'style="border-bottom: 2px solid #8aab6e; padding-bottom: 4px; '
         'font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; '
@@ -294,8 +275,8 @@ def render_html(data: dict, today: str, weather: str, devotional: str) -> str:
   <h2 {h2}>Work</h2>
   {work_html}
 
-  <h2 {h2}>Scripture - {clean(data.get("scripture_ref", ""))}</h2>
-  <p>{clean(data.get("scripture", ""))}</p>
+  <h2 {h2}>Scripture - {clean(scripture_ref)}</h2>
+  <p>{clean(scripture)}</p>
 
   <h2 {h2}>Devotional</h2>
   <p>{clean(devotional)}</p>

@@ -19,7 +19,7 @@ from googleapiclient.discovery import build
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-VAULT_ROOT      = pathlib.Path(__file__).parent.parent / "AIL"
+VAULT_ROOT      = pathlib.Path(__file__).parent.parent / "ailvault"
 BRAINDUMP_ROOT  = pathlib.Path(__file__).parent.parent / "briandump"
 TIMEZONE        = datetime.timezone(datetime.timedelta(hours=-6))  # CST
 

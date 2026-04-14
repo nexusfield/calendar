@@ -22,6 +22,13 @@ jobs:
           token: ${{ secrets.BRAINDUMP_PAT }}
           path: briandump
 
+      - name: Checkout AIL vault
+        uses: actions/checkout@v4
+        with:
+          repository: nexusfield/AILvault
+          token: ${{ secrets.AILVAULT_PAT }}
+          path: ailvault
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

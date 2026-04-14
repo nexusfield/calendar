@@ -16,9 +16,7 @@ def compose_scripture_and_devotional() -> tuple:
         model="claude-sonnet-4-6",
         max_tokens=600,
         system="You select scripture and write men's devotionals.",
-        messages=[{"role": "user", "content": f"""Today is {today}. Pick any passage from the Bible fitting for a man starting his day. Write the most striking verse or two in modern plain English. Then write a 3-4 sentence men's devotional on it — the kind that puts steel in a man's spine before he walks out the door. Grounded in the character of God and the person of Christ. Direct, honest, no filler.
-
-Do not reference work, tasks, exams, projects, or daily circumstances. Keep the devotional grounded in theology and character — who God is, who Christ is, what that demands of a man.
+        messages=[{"role": "user", "content": f"""Today is {today}. Pick any passage from the Bible fitting for a man starting his day. Write the most striking verse or two in modern plain English. Then write a 3-4 sentence men's devotional about the verse. Keep it strictly scripture related and drive home a specific angle of living the way of Jesus, and one way that I can practice it today.
 
 Respond with JSON only:
 {{"scripture_ref": "...", "scripture": "...", "devotional": "..."}}"""}],

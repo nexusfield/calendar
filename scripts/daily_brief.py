@@ -195,6 +195,7 @@ Instructions:
 - Word of the Day: Pick a strong, uncommon English word. Give a short one-line definition.
 - Scripture: Pick the ONE passage most fitting for a man starting his day with purpose. Write it in modern plain English, accurate to the meaning, readable. Do not shorten it.
 - Devotional: 3-4 sentences. Direct, grounded, rooted in Christ. For a man who wants to start strong. No fluff, no cliches. Write it like you mean it.
+- Weather summary: Based on the weather data, write one casual sentence about what kind of day it'll be. Practical, not poetic. Examples: "May want a raincoat." or "Good day to be outside." or "Hot and muggy — stay hydrated."
 - Tasks: Extract only unchecked items (lines starting with "- [ ]") from the personal note. Strip Obsidian wiki links like [[...]]. Keep each item short.
 - Work: Extract only unchecked items (lines starting with "- [ ]") from the work note. Strip Obsidian wiki links like [[...]]. Group related items into short topic buckets (e.g. "HubSpot CRM", "Doc Parser", "Sophie follow-ups") with a count or brief summary. Do not list every individual sub-task. Aim for 4-6 topic lines max.
 - Use NO em dashes (the long dash character) anywhere in the output.
@@ -214,6 +215,7 @@ Use this exact HTML structure and fill in each section:
 
   <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Weather - Baton Rouge</h2>
   <p style="white-space: pre-line;">[WEATHER BLOCK - copy exactly as given]</p>
+  <p style="color: #555; font-style: italic;">[WEATHER SUMMARY - one casual sentence]</p>
 
   <h2 style="border-bottom: 1px solid #ddd; padding-bottom: 4px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: #555;">Meetings</h2>
   [<ul style="padding-left: 20px;"><li> per event</ul> OR <p>None.</p>]

@@ -246,7 +246,7 @@ def compose_devotional(scripture_ref: str, scripture: str) -> str:
         messages=[{"role": "user", "content": f"""Scripture: {scripture_ref}
 {scripture}
 
-Write a 3-4 sentence devotional for a man starting his day. Grounded in faith, direct, personal. No cliches. Do not reference work, tasks, schedules, or assignments."""}],
+Write a 3-4 sentence men's devotional based on this passage. The kind that puts steel in a man's spine before he walks out the door. Grounded in the character of God and the person of Christ. Direct, honest, no filler."""}],
     )
     return message.content[0].text.strip().replace("\u2014", "-")
 

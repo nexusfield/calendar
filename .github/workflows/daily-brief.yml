@@ -44,5 +44,6 @@ jobs:
           RECIPIENT_EMAIL:         ${{ secrets.RECIPIENT_EMAIL }}
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
           GOOGLE_CALENDAR_ID:      ${{ secrets.GOOGLE_CALENDAR_ID }}
+          GOOGLE_WORK_CALENDAR_ID: ${{ secrets.GOOGLE_WORK_CALENDAR_ID }}
           OPENWEATHER_API_KEY:     ${{ secrets.OPENWEATHER_API_KEY }}
         run: python scripts/daily_brief.py

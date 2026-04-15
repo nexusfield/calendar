@@ -122,8 +122,13 @@ def read_braindump_daily_note() -> str:
 # ── 3. Google Calendar ────────────────────────────────────────────────────────
 
 def get_calendar_events() -> str:
-    creds_json  = os.environ.get("GOOGLE_CREDENTIALS_JSON", "")
-    calendar_id = os.environ.get("GOOGLE_CALENDAR_ID", "primary")
+    creds_json   = os.environ.get("GOOGLE_CREDENTIALS_JSON", "")
+    personal_id  = os.environ.get("GOOGLE_CALENDAR_ID", "primary")
+    work_id      = os.environ.get("GOOGLE_WORK_CALENDAR_ID", "")
+
+    calendar_ids = [personal_id]
+    if work_id:
+        calendar_ids.append(work_id)
 
     if not creds_json:
         return "Google Calendar not configured."
@@ -139,20 +144,32 @@ def get_calendar_events() -> str:
     start_of_day = now.replace(hour=0,  minute=0,  second=0,  microsecond=0).isoformat()
     end_of_day   = now.replace(hour=23, minute=59, second=59, microsecond=0).isoformat()
 
-    result = service.events().list(
-        calendarId=calendar_id,
-        timeMin=start_of_day,
-        timeMax=end_of_day,
-        singleEvents=True,
-        orderBy="startTime",
-    ).execute()
+    all_events = []
+    for cal_id in calendar_ids:
+        try:
+            result = service.events().list(
+                calendarId=cal_id,
+                timeMin=start_of_day,
+                timeMax=end_of_day,
+                singleEvents=True,
+                orderBy="startTime",
+            ).execute()
+            all_events.extend(result.get("items", []))
+        except Exception as e:
+            print(f"Failed to fetch calendar {cal_id}: {e}")
 
-    events = result.get("items", [])
-    if not events:
+    if not all_events:
         return "No events today."
 
+    # Sort merged events by start time
+    def sort_key(event):
+        start = event["start"].get("dateTime", event["start"].get("date", ""))
+        return start
+
+    all_events.sort(key=sort_key)
+
     lines = []
-    for event in events:
+    for event in all_events:
         start = event["start"].get("dateTime", event["start"].get("date", ""))
         if "T" in start:
             dt       = datetime.datetime.fromisoformat(start)

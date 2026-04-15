@@ -341,19 +341,35 @@ def render_html(data: dict, today: str, weather: str, scripture_ref: str, script
 # ── 5. Send via Resend ────────────────────────────────────────────────────────
 
 def send_email(body: str):
+    now   = datetime.datetime.now(TIMEZONE)
+    today = _day_without_leading_zero(now, "%A") + f" {now.strftime('%b')}"
+    subject = f"Morning Brief: {today}"
+
+    # Send to personal Gmail
     resend.api_key = os.environ["RESEND_API_KEY"]
     recipient      = os.environ["RECIPIENT_EMAIL"]
-    now            = datetime.datetime.now(TIMEZONE)
-    today          = _day_without_leading_zero(now, "%A") + f" {now.strftime('%b')}"
-
     resend.Emails.send({
         "from":    "onboarding@resend.dev",
         "to":      recipient,
-        "subject": f"Morning Brief: {today}",
+        "subject": subject,
         "html":    body,
         "text":    "See HTML version.",
     })
     print(f"Brief sent to {recipient}")
+
+    # Send to school email
+    school_key       = os.environ.get("RESEND_SCHOOL_API_KEY", "")
+    school_recipient = os.environ.get("SCHOOL_EMAIL", "")
+    if school_key and school_recipient:
+        resend.api_key = school_key
+        resend.Emails.send({
+            "from":    "onboarding@resend.dev",
+            "to":      school_recipient,
+            "subject": subject,
+            "html":    body,
+            "text":    "See HTML version.",
+        })
+        print(f"Brief sent to {school_recipient}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────

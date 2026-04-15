@@ -46,4 +46,6 @@ jobs:
           GOOGLE_CALENDAR_ID:      ${{ secrets.GOOGLE_CALENDAR_ID }}
           GOOGLE_WORK_CALENDAR_ID: ${{ secrets.GOOGLE_WORK_CALENDAR_ID }}
           OPENWEATHER_API_KEY:     ${{ secrets.OPENWEATHER_API_KEY }}
+          RESEND_SCHOOL_API_KEY:   ${{ secrets.RESEND_SCHOOL_API_KEY }}
+          SCHOOL_EMAIL:            ${{ secrets.SCHOOL_EMAIL }}
         run: python scripts/daily_brief.py

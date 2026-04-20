@@ -113,7 +113,7 @@ def read_today_daily_note() -> str:
 
 def read_braindump_daily_note() -> str:
     today     = datetime.datetime.now(TIMEZONE).strftime("%Y-%m-%d")
-    note_path = BRAINDUMP_ROOT / "daily" / f"{today}.md"
+    note_path = BRAINDUMP_ROOT / "time" / "daily" / f"{today}.md"
     if note_path.exists():
         return note_path.read_text(encoding="utf-8")
     return f"No personal note found for {today}."

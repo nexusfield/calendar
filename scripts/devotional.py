@@ -47,12 +47,31 @@ def _log_prompt_boundary(label: str, system_prompt: str, user_prompt: str):
         )
 
 
+_BIBLE_BOOKS = [
+    "Psalms", "Proverbs", "Matthew", "Luke", "John", "Romans",
+    "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians",
+    "Philippians", "Colossians", "James", "1 Peter", "Hebrews",
+    "Isaiah", "Jeremiah", "Ezekiel", "Genesis", "Exodus",
+    "Joshua", "Judges", "1 Samuel", "2 Samuel", "1 Kings",
+    "Job", "Ecclesiastes", "Acts", "Revelation", "Mark",
+    "2 Timothy", "Titus", "Nehemiah", "Daniel", "Micah",
+]
+
+_NEVER_REUSE = [
+    "Mark 10:45", "John 3:16", "Philippians 4:13", "Proverbs 3:5-6",
+    "Joshua 1:9", "Romans 8:28", "Jeremiah 29:11", "Matthew 6:33",
+]
+
+
 def compose_scripture_and_devotional() -> tuple:
     now = datetime.datetime.now()
     today = f"{now.strftime('%A, %B')} {now.day}, {now.year}"
+    # Pick book deterministically from date so it rotates every day
+    book = _BIBLE_BOOKS[now.timetuple().tm_yday % len(_BIBLE_BOOKS)]
+    never = ", ".join(_NEVER_REUSE)
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
     system_prompt = "You select scripture and write men's devotionals."
-    user_prompt = f"""Today is {today}. Pick any passage from the Bible fitting for a man starting his day. Write the most striking verse or two in modern plain English. Then write a 3-4 sentence men's devotional about the verse. Keep it strictly scripture related and drive home a specific angle of living the way of Jesus, and one way that I can practice it today.
+    user_prompt = f"""Today is {today}. Pick a specific passage from the book of {book}. Do NOT use any of these overused verses: {never}. Choose something less commonly cited but genuinely powerful. Write the most striking verse or two in modern plain English. Then write a 3-4 sentence men's devotional about the verse. Keep it strictly scripture related and drive home a specific angle of living the way of Jesus, and one way that I can practice it today.
 
 Respond with JSON only:
 {{"scripture_ref": "...", "scripture": "...", "devotional": "..."}}"""

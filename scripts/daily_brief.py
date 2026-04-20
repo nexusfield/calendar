@@ -161,25 +161,6 @@ def get_calendar_events() -> str:
     if not all_events:
         return "No events today."
 
-    # Filter: only keep events that look like actual meetings (have a Zoom/Meet/Teams link or call)
-    SKIP_KEYWORDS = {"school", "class", "lecture", "block", "study", "office hours"}
-
-    def is_meeting(event):
-        title = event.get("summary", "").lower()
-        # Skip school-related blocks
-        if any(kw in title for kw in SKIP_KEYWORDS):
-            return False
-        # Keep if it has a video conference link
-        if event.get("hangoutLink") or event.get("conferenceData"):
-            return True
-        description = event.get("description", "").lower()
-        location    = event.get("location", "").lower()
-        if any(s in description or s in location for s in ["zoom.us", "meet.google", "teams.microsoft"]):
-            return True
-        return True  # keep non-school events even without a link
-
-    all_events = [e for e in all_events if is_meeting(e)]
-
     # Sort merged events by start time
     def sort_key(event):
         start = event["start"].get("dateTime", event["start"].get("date", ""))
